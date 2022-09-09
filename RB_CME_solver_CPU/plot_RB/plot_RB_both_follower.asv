@@ -1,0 +1,63 @@
+function d=plot_RB_both_follower(i,j,X,P,truncated_size,follower_subsystems,...
+                        species_decomposition_LF)
+
+sample_size=size(X,2); 
+
+d=zeros(truncated_size(i),truncated_size(j));
+                    
+% indentify which subsystem do they belongs to 
+for index=1:size(follower_subsystems,2)
+    if ismember(i,follower_subsystems{index}) ==1
+       follower_index1=index;
+    end
+    if ismember(i,follower_subsystems{index}) ==1
+       follower_index2=index;
+    end
+end
+
+
+% different subsystem
+if follower_index1~=follower_index2
+    for sample_index=1:sample_size
+        for LI1=1:size(P{follower_index1,1},1)  % tranverse all the probability vector
+           truncated_size_follower_subsystem=truncated_size(follower_subsystems{follower_index1});
+           MI_i=Linear_index_2_matrix_index(truncated_size_follower_subsystem,LI1);
+           a=find(follower_subsystems{follower_index1}==i);
+           index_i=MI_i(a);
+           value1=P{follower_index1,sample_index}(LI1);
+           for LI2=1:size(P{follower_index2,1},1)
+               truncated_size_follower_subsystem=truncated_size(follower_subsystems{follower_index2});
+               MI_j=Linear_index_2_matrix_index(truncated_size_follower_subsystem,LI2);
+               a=find(follower_subsystems{follower_index2}==j);
+               index_j=MI_j(a);
+               value2=P{follower_index2,sample_index}(LI2);
+               d(index_i,index_j)=d(index_i,index_j)+value1*value2/sample_size;
+           end
+        end
+    end
+end
+
+
+% same subsystem
+if follower_index1==follower_index2
+    for sample_index=1:sample_size
+        for LI1=1:size(P{follower_index1,1},1)  % tranverse all the probability vector
+           truncated_size_follower_subsystem=truncated_size(follower_subsystems{follower_index1});
+           MI_i=Linear_index_2_matrix_index(truncated_size_follower_subsystem,LI1);
+           a=find(follower_subsystems{follower_index1}==i);
+           index_i=MI_i(a);
+           a=find(follower_subsystems{follower_index1}==i);
+           
+           
+           value1=P{follower_index1,sample_index}(LI1);
+           for LI2=1:size(P{follower_index2,1},1)
+               truncated_size_follower_subsystem=truncated_size(follower_subsystems{follower_index2});
+               MI_j=Linear_index_2_matrix_index(truncated_size_follower_subsystem,LI2);
+               a=find(follower_subsystems{follower_index2}==j);
+               index_j=MI_j(a);
+               value2=P{follower_index2,sample_index}(LI2);
+               d(index_i,index_j)=d(index_i,index_j)+value1*value2/sample_size;
+           end
+        end
+    end
+end
